@@ -3,13 +3,11 @@ import Navbar from "../components/Navbar";
 
 export default function HomeLayout() {
   return (
-    <>
-      <header className="max-w-3xl mx-auto p-5">
-        <Navbar />
-      </header>
-      <main className="max-w-3xl mx-auto p-5">
+    <div className="min-h-screen bg-[#f6f3ee] text-[#1a1714] font-sans leading-relaxed antialiased">
+      <Navbar />
+      <main>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }
