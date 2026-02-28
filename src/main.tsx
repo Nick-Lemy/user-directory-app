@@ -3,12 +3,15 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import HomePage from "./pages/Home.tsx";
+import HomeLayout from "./layouts/HomeLayout.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeLayout />}>
+          <Route index element={<HomePage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </StrictMode>,
