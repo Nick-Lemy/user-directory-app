@@ -4,6 +4,14 @@ A small web application that fetches users from [JSONPlaceholder](https://jsonpl
 
 ## Setup Instructions
 
+If you don't have pnpm installed:
+
+```bash
+npm install -g pnpm
+```
+
+Then:
+
 ```bash
 git clone https://github.com/Nick-Lemy/user-directory-app.git
 cd user-directory-app
