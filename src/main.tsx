@@ -2,8 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
-import HomePage from "./pages/Home.tsx";
-import HomeLayout from "./layouts/HomeLayout.tsx";
+import HomePage from "./features/home/pages/HomePage.tsx";
+import UserPage from "./features/home/pages/UserPage.tsx";
+import HomeLayout from "./features/home/layouts/HomeLayout.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -11,6 +12,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="users/:id" element={<UserPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
