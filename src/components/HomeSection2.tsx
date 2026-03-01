@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { BsExclamationTriangle, BsArrowClockwise } from "react-icons/bs";
+import { useDeferredValue, useMemo, useState, useEffect } from "react";
+import { BsExclamationTriangle, BsArrowClockwise, BsSearch } from "react-icons/bs";
 import UserCard from "./UserCard";
 
 interface ApiUser {
@@ -19,10 +19,22 @@ interface User {
   company: string;
 }
 
-export default function HomeSection2() {
+interface HomeSection2Props {
+  search: string;
+}
+
+export default function HomeSection2({ search }: HomeSection2Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const deferredSearch = useDeferredValue(search);
+
+  const filteredUsers = useMemo(() => {
+    const query = deferredSearch.toLowerCase().trim();
+    if (!query) return users;
+    return users.filter((u) => u.name.toLowerCase().includes(query));
+  }, [users, deferredSearch]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -83,10 +95,26 @@ export default function HomeSection2() {
     );
   }
 
+  if (filteredUsers.length === 0) {
+    return (
+      <div className="text-center py-20 px-8">
+        <div className="w-14 h-14 rounded-2xl bg-[#ede8e0] inline-grid place-items-center mb-4">
+          <BsSearch className="w-6 h-6 text-[#9c9590]" />
+        </div>
+        <div className="font-serif text-xl font-medium text-[#1a1714] mb-1.5">
+          No users found
+        </div>
+        <p className="text-sm text-[#9c9590]">
+          No results match "{search}". Try a different search term.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <section className="max-w-300 mx-auto mt-8 px-8 pb-20 max-md:px-5 max-md:pb-15">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 max-md:grid-cols-1">
-        {users.map((user, i) => (
+        {filteredUsers.map((user, i) => (
           <UserCard
             key={user.username}
             index={i}

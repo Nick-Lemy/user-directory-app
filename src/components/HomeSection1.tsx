@@ -1,6 +1,11 @@
 import { BsSearch } from "react-icons/bs";
 
-export default function HomeSection1() {
+interface HomeSection1Props {
+  search: string;
+  onSearchChange: (value: string) => void;
+}
+
+export default function HomeSection1({ search, onSearchChange }: HomeSection1Props) {
   return (
     <>
       {/* Hero */}
@@ -24,6 +29,8 @@ export default function HomeSection1() {
         <div className="relative w-full">
           <input
             type="text"
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name…"
             className="w-full py-3.5 pl-12 pr-5 text-[15px] border-[1.5px] border-[#e8e3db] rounded-[14px] bg-white text-[#1a1714] shadow-sm transition-all duration-250 placeholder:text-[#9c9590] hover:border-[#d4cec4] focus:outline-none focus:border-[#c8553d] focus:shadow-[0_0_0_3px_#f9eeeb,0_4px_16px_rgba(26,23,20,0.06)]"
           />
