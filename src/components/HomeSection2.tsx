@@ -1,21 +1,25 @@
 import { useDeferredValue, useMemo, useState, useEffect } from "react";
 import { BsExclamationTriangle, BsArrowClockwise, BsSearch } from "react-icons/bs";
 import UserCard from "./UserCard";
+import UserModal from "./UserModal";
 
 interface ApiUser {
   id: number;
   name: string;
   username: string;
   email: string;
-  address: { city: string };
+  phone: string;
+  address: { street: string; suite: string; city: string; zipcode: string };
   company: { name: string };
 }
 
-interface User {
+export interface User {
   name: string;
   username: string;
   email: string;
+  phone: string;
   city: string;
+  address: string;
   company: string;
 }
 
@@ -27,6 +31,7 @@ export default function HomeSection2({ search }: HomeSection2Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const deferredSearch = useDeferredValue(search);
 
@@ -48,7 +53,9 @@ export default function HomeSection2({ search }: HomeSection2Props) {
           name: u.name,
           username: u.username,
           email: u.email,
+          phone: u.phone,
           city: u.address.city,
+          address: `${u.address.suite}, ${u.address.street}, ${u.address.city}, ${u.address.zipcode}`,
           company: u.company.name,
         }))
       );
@@ -123,9 +130,14 @@ export default function HomeSection2({ search }: HomeSection2Props) {
             email={user.email}
             city={user.city}
             company={user.company}
+            onClick={() => setSelectedUser(user)}
           />
         ))}
       </div>
+
+      {selectedUser && (
+        <UserModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+      )}
     </section>
   );
 }

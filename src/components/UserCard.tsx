@@ -30,6 +30,7 @@ interface UserCardProps {
   city: string;
   company: string;
   index: number;
+  onClick?: () => void;
 }
 
 export default function UserCard({
@@ -39,10 +40,13 @@ export default function UserCard({
   city,
   company,
   index,
+  onClick,
 }: UserCardProps) {
   return (
     <div
       tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => e.key === "Enter" && onClick?.()}
       className="group relative bg-white border border-[#e8e3db] rounded-[20px] p-6 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] overflow-hidden hover:border-[#d4cec4] hover:shadow-[0_4px_16px_rgba(26,23,20,0.06)] hover:-translate-y-0.5 before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-0.75 before:bg-[#c8553d] before:scale-x-0 before:origin-left before:transition-transform before:duration-350 before:ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:before:scale-x-100"
       style={{ animationDelay: `${index * 0.03}s` }}
     >
