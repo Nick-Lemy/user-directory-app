@@ -1,75 +1,88 @@
-# React + TypeScript + Vite
+# User Directory App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small web application that fetches users from [JSONPlaceholder](https://jsonplaceholder.typicode.com/users) and displays them in a browsable, searchable directory. Built with React 19, TypeScript, Tailwind CSS v4, and React Router v7.
 
-Currently, two official plugins are available:
+## Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# Install dependencies
+pnpm install
 
-## React Compiler
+# Start development server
+pnpm dev
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+# Run unit tests
+pnpm vitest run
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Build for production
+pnpm build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## State Management Approach
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+All state is managed with React's built-in hooks  - no external state library is used, as the scope doesn't warrant one.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **`useUsers` hook** (`features/home/hooks/useUsers.ts`)  - Encapsulates the data-fetching lifecycle (`users`, `loading`, `error`) and exposes a `retry` function. This keeps the API concern out of UI components and avoids redundant API calls by fetching once on mount.
+- **Search and sort state** live in `HomePage` and are passed down as props. Search filtering uses `useDeferredValue` to avoid blocking the UI during rapid typing, and `useMemo` to skip recomputation when inputs haven't changed.
+- **User detail page** is handled via client-side routing (`/users/:id`), so the directory's search/sort state is naturally preserved when navigating back.
+
+This approach was chosen because the app has a shallow component tree with straightforward data flow. Lifting state to the nearest common parent and passing props down is sufficient  - Context or an external store would add complexity without benefit here.
+
+## Assumptions
+
+- The JSONPlaceholder API is stable and always returns the same 10 users.
+- "Full address" means the combination of suite, street, city, and zipcode from the API response.
+- The sort toggle sorts by full name (not username) since that's the primary display field.
+- React Compiler (babel-plugin-react-compiler) is enabled for automatic memoization, which reduces the need for manual `React.memo` wrappers.
+
+## What I Would Improve With More Time
+
+- **Pagination or virtual scrolling** for larger datasets.
+- **Debounced search** as an alternative to `useDeferredValue` for broader browser support.
+- **More comprehensive tests**  - integration tests for the full search-filter-sort flow, and tests for the `useUsers` hook with mocked fetch.
+- **Accessibility audit**  - proper ARIA labels on the search input, sort button, and card interactions, plus keyboard navigation between cards.
+- **Skeleton loading states** instead of a simple spinner for a smoother perceived loading experience.
+- **Error boundary** at the app level to catch unexpected rendering errors gracefully.
+
+## Project Structure
+
 ```
+src/
+├── api/
+│   └── users.ts                # fetchUsers(), fetchUser(), User type
+├── utils/
+│   └── avatar.ts               # avatarGradients, getInitials(), getGradient()
+├── components/
+│   └── shared/
+│       └── Logo.tsx
+├── features/
+│   └── home/
+│       ├── components/
+│       │   ├── HeroSection.tsx  # Hero banner, search input, sort toggle
+│       │   ├── UserGrid.tsx     # Card grid with filtering and sorting
+│       │   ├── UserCard.tsx     # Individual user card
+│       │   ├── UserModal.tsx    # User detail modal
+│       │   └── Navbar.tsx       # Top navigation bar
+│       ├── hooks/
+│       │   └── useUsers.ts     # Data fetching hook
+│       ├── layouts/
+│       │   └── HomeLayout.tsx
+│       └── pages/
+│           ├── HomePage.tsx    # Main directory listing
+│           └── UserPage.tsx    # User detail page (/users/:id)
+├── test/
+│   ├── setup.ts
+│   ├── utils/
+│   │   └── avatar.test.ts     # Unit tests for utility functions
+│   └── components/
+│       └── UserCard.test.tsx   # Unit tests for UserCard component
+├── index.css
+└── main.tsx
+```
+
+## Bonus Features Implemented
+
+- Sort A-Z toggle next to the search bar
+- Client-side routing with shareable URLs (`/users/:id`)
+- Unit tests for both a utility (`avatar.ts`) and a component (`UserCard`)
+- Staggered card entrance animations and modal open/close animations
