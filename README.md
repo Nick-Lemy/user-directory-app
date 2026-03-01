@@ -5,17 +5,25 @@ A small web application that fetches users from [JSONPlaceholder](https://jsonpl
 ## Setup Instructions
 
 ```bash
-# Install dependencies
+git clone https://github.com/Nick-Lemy/user-directory-app.git
+cd user-directory-app
 pnpm install
-
-# Start development server
 pnpm dev
+```
 
-# Run unit tests
+The app will be available at `http://localhost:5173`.
+
+## Running Tests
+
+```bash
 pnpm vitest run
+```
 
-# Build for production
+## Build for Production
+
+```bash
 pnpm build
+pnpm preview
 ```
 
 ## State Management Approach
